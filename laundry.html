@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CleanWave Laundry Shop</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #eef7ff;
+            color: #123;
+        }
+
+        header {
+            background: #087ea4;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 10px auto;
+            border-radius: 12px;
+        }
+
+        nav {
+            background: #05617e;
+            padding: 10px;
+            text-align: center;
+            display: none; 
+        }
+
+        nav button {
+            background: white;
+            color: #05617e;
+            border: none;
+            padding: 10px 16px;
+            margin: 4px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        nav button:hover, nav button.active-nav {
+            background: #bcecff;
+            color: #033c4f;
+        }
+
+        nav button.logout-btn {
+            background: #d9534f;
+            color: white;
+        }
+        nav button.logout-btn:hover {
+            background: #c9302c;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+
+        .module {
+            display: none;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .module.active {
+            display: block;
+        }
+
+        h2, h3 {
+            color: #087ea4;
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+
+        input[readonly] {
+            background-color: #f4f4f4;
+            cursor: not-allowed;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 4px 2px;
+            font-weight: bold;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .primary { background: #087ea4; color: white; }
+        .danger { background: #d9534f; color: white; }
+        .secondary { background: #777; color: white; }
+        .success { background: #28a745; color: white; }
+        .warning { background: #f0ad4e; color: white; }
+        
+        .btn-large {
+            padding: 15px 25px;
+            font-size: 1.1em;
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #dff5ff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .card h3 {
+            margin: 5px 0;
+            color: #087ea4;
+            font-size: 1.8em;
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #555;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 11px;
+            border: 1px solid #eee;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        th {
+            background: #087ea4;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fbfd;
+        }
+
+        .auth-tabs {
+            display: flex;
+            border-bottom: 2px solid #087ea4;
+            margin-bottom: 20px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: #eef7ff;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            color: #05617e;
+        }
+
+        .auth-tab.active {
+            background: #087ea4;
+            color: white;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .stepper::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #ddd;
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            background: white;
+            padding: 0 10px;
+            text-align: center;
+        }
+
+        .step-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ddd;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 5px auto;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .step.completed .step-icon {
+            background: #28a745;
+            color: white;
+        }
+
+        .step.active .step-icon {
+            background: #087ea4;
+            color: white;
+            box-shadow: 0 0 0 4px #bcecff;
+        }
+
+        .step-text {
+            font-size: 0.8em;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .notif-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .notif-item {
+            padding: 12px 15px;
+            background: #f0f8ff;
+            border-left: 4px solid #087ea4;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .bg-received { background: #6c757d; }
+        .bg-washing { background: #17a2b8; }
+        .bg-drying { background: #ffc107; color: #212529; }
+        .bg-ready { background: #007bff; }
+        .bg-completed { background: #28a745; }
+        .bg-canceled { background: #dc3545; }
+
+        .chart-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 180px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-top: 15px;
+        }
+
+        .chart-bar {
+            width: 40px;
+            background: #087ea4;
+            border-radius: 4px 4px 0 0;
+            text-align: center;
+            color: white;
+            font-size: 0.75em;
+            padding-top: 5px;
+            transition: height 0.4s ease;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="799502207_984453877989619_8914719390174734006_n.png" alt="CleanWave Laundry Shop Logo" class="logo">
+    <h1>CleanWave Laundry Shop</h1>
+    <p>Laundry Management Information System</p>
+    <p id="clientDisplay">Welcome to CleanWave</p>
+</header>
+
+<!-- CUSTOMER NAV -->
+<nav id="customerNav">
+    <button onclick="showModule('custDashboard')" id="cNavDash">Dashboard</button>
+    <button onclick="showModule('custNewOrder')" id="cNavNew">New Order</button>
+    <button onclick="showModule('custOrders')" id="cNavOrders">My Orders</button>
+    <button onclick="showModule('custNotifications')" id="cNavNotif">Notifications</button>
+    <button onclick="showModule('custProfile')" id="cNavProf">My Profile & Security</button>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+</nav>
+
+<!-- ADMIN NAV -->
+<nav id="adminNav">
+    <button onclick="showModule('adminDashboard')" id="aNavDash">Admin Dashboard</button>
+    <button onclick="showModule('adminOrders')" id="aNavOrders">Order Management</button>
+    <button onclick="showModule('adminSales')" id="aNavSales">Sales & Revenue</button>
+    <button onclick="showModule('adminCustomers')" id="aNavCust">Customer Management</button>
+    <button onclick="showModule('adminServices')" id="aNavServ">Services & Pricing</button>
+    <button onclick="showModule('adminInventory')" id="aNavInv">Inventory</button>
+    <button onclick="showModule('adminNotifications')" id="aNavNotif">Admin Notifications</button>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+</nav>
+
+<div class="container">
+
+    <!-- LOGIN & REGISTRATION MODULE -->
+    <section id="login" class="module active">
+        <div class="auth-tabs">
+            <button class="auth-tab active" id="tabSignIn" onclick="switchAuthTab('signIn')">Sign In</button>
+            <button class="auth-tab" id="tabSignUp" onclick="switchAuthTab('signUp')">Sign Up (Customer)</button>
+        </div>
+
+        <div id="signInForm" class="auth-form active">
+            <h2>Sign In</h2>
+            <p>Access your CleanWave customer account or administrative panel.</p>
+            
+            <div class="form-group">
+                <label>Login As:</label>
+                <select id="loginRole" onchange="toggleLoginInputs()">
+                    <option value="customer">Customer / Buyer</option>
+                    <option value="admin">Administrator</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="loginNameGroup">
+                <label>Registered Name or Gmail:</label>
+                <input type="text" id="loginName" placeholder="e.g. Wince Wob or wincewob@gmail.com">
+            </div>
+
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="loginPassword" placeholder="Enter password">
+            </div>
+
+            <button class="btn primary" style="width: 100%;" onclick="login()">Sign In</button>
+        </div>
+
+        <div id="signUpForm" class="auth-form">
+            <h2>Create a Customer Account</h2>
+            <p>Sign up with your Gmail to place orders securely and track laundry status.</p>
+
+            <div class="form-group">
+                <label>Full Name:</label>
+                <input type="text" id="signUpName" placeholder="Enter full name">
+            </div>
+
+            <div class="form-group">
+                <label>Gmail Address:</label>
+                <input type="email" id="signUpEmail" placeholder="e.g. wincewob@gmail.com">
+            </div>
+
+            <div class="form-group">
+                <label>Contact Number:</label>
+                <input type="text" id="signUpContact" placeholder="Enter phone number">
+            </div>
+
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="signUpPassword" placeholder="Create password">
+            </div>
+
+            <button class="btn success" style="width: 100%;" onclick="registerCustomer()">Register Account</button>
+        </div>
+    </section>
+
+    <!-- CUSTOMER DASHBOARD -->
+    <section id="custDashboard" class="module">
+        <h2 id="custWelcomeText">Welcome, Wince Wob!</h2>
+        
+        <h3>Quick Stats</h3>
+        <div class="cards">
+            <div class="card">
+                <h3 id="custActiveOrders">0</h3>
+                <p>Active Orders</p>
+            </div>
+            <div class="card">
+                <h3 id="custCompletedOrders">0</h3>
+                <p>Completed Orders</p>
+            </div>
+            <div class="card">
+                <h3 id="custCanceledOrders">0</h3>
+                <p>Canceled Orders</p>
+            </div>
+            <div class="card">
+                <h3 id="custTotalSpent">₱0.00</h3>
+                <p>Total Spent</p>
+            </div>
+        </div>
+
+        <button class="btn primary btn-large" onclick="showModule('custNewOrder')">＋ NEW ORDER</button>
+
+        <h3>Current Active Order Progress</h3>
+        <div id="activeOrderTracker">
+            <p style="color: #666;">No active order currently in progress.</p>
+        </div>
+
+        <br>
+        <h3>Recent Notifications</h3>
+        <ul id="custDashNotifList" class="notif-list">
+            <li class="notif-item">Welcome to CleanWave Laundry Shop!</li>
+        </ul>
+
+        <br>
+        <h3>Recent Orders</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Date</th>
+                    <th>Service</th>
+                    <th>Weight</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="custDashRecentOrders"></tbody>
+        </table>
+    </section>
+
+    <!-- CUSTOMER NEW ORDER -->
+    <section id="custNewOrder" class="module">
+        <h2>Place New Laundry Order</h2>
+        <p>Select your preferred options and submit your laundry request.</p>
+
+        <div class="form-group">
+            <label>Service Type</label>
+            <select id="newServiceSelect" onchange="calculateCustOrder()"></select>
+        </div>
+
+        <div class="form-group">
+            <label>Weight (kg)</label>
+            <input type="number" id="newWeightInput" min="1" value="1" oninput="calculateCustOrder()">
+        </div>
+
+        <div class="form-group">
+            <label>Pickup / Delivery Option</label>
+            <select id="newPickupSelect">
+                <option value="Drop-off & Self Pickup">Drop-off & Self Pickup</option>
+                <option value="Home Delivery (+₱50)">Home Delivery (+₱50)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Preferred Date & Time</label>
+            <input type="datetime-local" id="newPrefDateInput">
+        </div>
+
+        <div class="form-group">
+            <label>Special Notes / Instructions</label>
+            <textarea id="newNotesInput" rows="3" placeholder="e.g., Separate whites, delicate items, use extra softener"></textarea>
+        </div>
+
+        <div style="background: #e6f7e9; padding: 15px; border-left: 5px solid #28a745; margin-bottom: 15px;">
+            <strong>Total Amount: </strong> <span id="newOrderCostDisplay" style="font-size: 1.2em; font-weight: bold; color: #28a745;">₱40.00</span>
+        </div>
+
+        <button class="btn success" style="width: 100%; font-size: 1.1em;" onclick="submitCustomerOrder()">Submit Order</button>
+    </section>
+
+    <!-- CUSTOMER ORDERS / HISTORY -->
+    <section id="custOrders" class="module">
+        <h2>My Orders & History</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Date & Time</th>
+                    <th>Service</th>
+                    <th>Weight</th>
+                    <th>Option</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="custAllOrdersTable"></tbody>
+        </table>
+    </section>
+
+    <!-- CUSTOMER NOTIFICATIONS -->
+    <section id="custNotifications" class="module">
+        <h2>Notifications</h2>
+        <ul id="custFullNotifList" class="notif-list"></ul>
+    </section>
+
+    <!-- CUSTOMER PROFILE & SECURITY -->
+    <section id="custProfile" class="module">
+        <h2>My Profile & Security</h2>
+        
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="profNameInput">
+        </div>
+        <div class="form-group">
+            <label>Gmail Address (Account Recovery & Security)</label>
+            <input type="email" id="profEmailInput" placeholder="e.g. wincewob@gmail.com">
+        </div>
+        <div class="form-group">
+            <label>Contact Number</label>
+            <input type="text" id="profContactInput">
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        <h3>Security Settings</h3>
+        
+        <div class="form-group">
+            <label>Current Password</label>
+            <input type="password" id="profCurrentPass" placeholder="Enter current password to make changes">
+        </div>
+        <div class="form-group">
+            <label>New Password (Leave blank if not changing)</label>
+            <input type="password" id="profNewPass" placeholder="Enter new password">
+        </div>
+
+        <button class="btn primary" onclick="updateCustomerProfile()">Save & Update Security Profile</button>
+    </section>
+
+    <!-- ADMIN DASHBOARD -->
+    <section id="adminDashboard" class="module">
+        <h2>Good morning, Admin!</h2>
+        <p>Today's Overview & Real-time Shop Metrics</p>
+
+        <div class="cards">
+            <div class="card">
+                <h3 id="admTodayOrders">0</h3>
+                <p>Today's Orders</p>
+            </div>
+            <div class="card">
+                <h3 id="admTodayRevenue">₱0.00</h3>
+                <p>Today's Revenue</p>
+            </div>
+            <div class="card">
+                <h3 id="admProcessingOrders">0</h3>
+                <p>In Processing</p>
+            </div>
+            <div class="card">
+                <h3 id="admCompletedOrders">0</h3>
+                <p>Completed Orders</p>
+            </div>
+        </div>
+
+        <h3>Quick Order Actions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Service</th>
+                    <th>Status</th>
+                    <th>Update Status</th>
+                </tr>
+            </thead>
+            <tbody id="admQuickOrdersTable"></tbody>
+        </table>
+    </section>
+
+    <!-- ADMIN ORDER MANAGEMENT -->
+    <section id="adminOrders" class="module">
+        <h2>Order Management</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Service</th>
+                    <th>Weight</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="admAllOrdersTable"></tbody>
+        </table>
+    </section>
+
+    <!-- ADMIN SALES & REVENUE -->
+    <section id="adminSales" class="module">
+        <h2>Sales / Revenue Statistics</h2>
+        <div class="cards">
+            <div class="card">
+                <h3 id="salesToday">₱0.00</h3>
+                <p>Today's Sales</p>
+            </div>
+            <div class="card">
+                <h3 id="salesWeekly">₱0.00</h3>
+                <p>Weekly Sales</p>
+            </div>
+            <div class="card">
+                <h3 id="salesMonthly">₱0.00</h3>
+                <p>Monthly Sales</p>
+            </div>
+            <div class="card">
+                <h3 id="salesTopService">None</h3>
+                <p>Most-Used Service</p>
+            </div>
+        </div>
+
+        <h3>Weekly Sales Overview Chart</h3>
+        <div class="chart-container" id="salesChart">
+            <div class="chart-bar" style="height: 10%;">Mon</div>
+            <div class="chart-bar" style="height: 10%;">Tue</div>
+            <div class="chart-bar" style="height: 10%;">Wed</div>
+            <div class="chart-bar" style="height: 10%;">Thu</div>
+            <div class="chart-bar" style="height: 10%;">Fri</div>
+            <div class="chart-bar" style="height: 10%;">Sat</div>
+            <div class="chart-bar" style="height: 10%;">Sun</div>
+        </div>
+    </section>
+
+    <!-- ADMIN CUSTOMER MANAGEMENT -->
+    <section id="adminCustomers" class="module">
+        <h2>Customer Management</h2>
+        <p><strong>Total Registered Customers: </strong><span id="admTotalCustomersCount">0</span></p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer Name</th>
+                    <th>Gmail Address</th>
+                    <th>Contact</th>
+                    <th>Total Orders</th>
+                    <th>Account Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="admCustomersTable"></tbody>
+        </table>
+    </section>
+
+    <!-- ADMIN SERVICES & PRICING -->
+    <section id="adminServices" class="module">
+        <h2>Services & Pricing Management</h2>
+        
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <h3>＋ Add / Update Service</h3>
+            <div class="form-group">
+                <label>Service Name</label>
+                <input type="text" id="servNameInput" placeholder="e.g. Ironing">
+            </div>
+            <div class="form-group">
+                <label>Price (₱)</label>
+                <input type="number" id="servPriceInput" placeholder="e.g. 30">
+            </div>
+            <div class="form-group">
+                <label>Unit Basis</label>
+                <select id="servUnitSelect">
+                    <option value="/ kg">per kg</option>
+                    <option value="/ item">per item</option>
+                    <option value="/ load">per load</option>
+                </select>
+            </div>
+            <button class="btn success" onclick="addOrUpdateService()">Save Service</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Service Name</th>
+                    <th>Price</th>
+                    <th>Unit</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="admServicesTable"></tbody>
+        </table>
+    </section>
+
+    <!-- ADMIN INVENTORY -->
+    <section id="adminInventory" class="module">
+        <h2>Laundry Supplies & Inventory</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Stock Quantity</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="admInventoryTable"></tbody>
+        </table>
+    </section>
+
+    <!-- ADMIN NOTIFICATIONS -->
+    <section id="adminNotifications" class="module">
+        <h2>Admin Notifications & Alerts</h2>
+        <ul id="admNotifList" class="notif-list"></ul>
+    </section>
+
+</div>
+
+<footer>
+    <p>CleanWave Laundry Shop © 2026 | All Rights Reserved</p>
+</footer>
+
+<script>
+    // Registered accounts (You can delete these if you want 0 registered accounts)
+    let registeredUsers = [
+        { id: 1, name: "Wince Wob", email: "wincewob@gmail.com", contact: "09171234567", password: "123", status: "Active" }
+    ];
+
+    let services = [
+        { name: "Wash & Fold", price: 40, unit: "/ kg" },
+        { name: "Wash & Dry", price: 50, unit: "/ kg" },
+        { name: "Dry Cleaning", price: 100, unit: "/ item" },
+        { name: "Ironing", price: 30, unit: "/ item" },
+        { name: "Self-Service", price: 80, unit: "/ load" }
+    ];
+
+    let inventory = [
+        { name: "Detergent", qty: 12, unit: "bottles" },
+        { name: "Fabric Softener", qty: 3, unit: "bottles" },
+        { name: "Laundry Bags", qty: 150, unit: "pcs" }
+    ];
+
+    // EMPTY ORDERS ARRAY
+    let orders = [];
+    let customerNotifs = {};
+    let adminNotifs = [];
+
+    let currentUserRole = "";
+    let currentUserName = "";
+    let orderCounter = 1;
+
+    const ADMIN_PASSWORD = "Laundry808";
+    const statusSteps = ["Received", "Washing", "Drying", "Ready", "Completed"];
+
+    function switchAuthTab(tab) {
+        document.getElementById("tabSignIn").classList.toggle("active", tab === 'signIn');
+        document.getElementById("tabSignUp").classList.toggle("active", tab === 'signUp');
+        document.getElementById("signInForm").classList.toggle("active", tab === 'signIn');
+        document.getElementById("signUpForm").classList.toggle("active", tab === 'signUp');
+    }
+
+    function toggleLoginInputs() {
+        let role = document.getElementById("loginRole").value;
+        document.getElementById("loginNameGroup").style.display = (role === "admin") ? "none" : "block";
+    }
+
+    function login() {
+        let role = document.getElementById("loginRole").value;
+        let password = document.getElementById("loginPassword").value.trim();
+
+        if (role === "admin") {
+            if (password !== ADMIN_PASSWORD) {
+                alert("Incorrect Admin password!");
+                return;
+            }
+            currentUserRole = "admin";
+            currentUserName = "Admin";
+            document.getElementById("adminNav").style.display = "block";
+            document.getElementById("customerNav").style.display = "none";
+            document.getElementById("clientDisplay").innerText = "Logged in as Administrator";
+            showModule("adminDashboard");
+        } else {
+            let inputNameOrEmail = document.getElementById("loginName").value.trim().toLowerCase();
+            let user = registeredUsers.find(u => 
+                (u.name.toLowerCase() === inputNameOrEmail || (u.email && u.email.toLowerCase() === inputNameOrEmail)) 
+                && u.password === password
+            );
+            
+            if (!user) {
+                alert("Invalid Customer Credentials! Please check your Name/Gmail and Password.");
+                return;
+            }
+
+            if (user.status === "Disabled") {
+                alert("Your account has been disabled by the administrator.");
+                return;
+            }
+
+            currentUserRole = "customer";
+            currentUserName = user.name;
+            document.getElementById("customerNav").style.display = "block";
+            document.getElementById("adminNav").style.display = "none";
+            document.getElementById("clientDisplay").innerText = "Logged in as: " + currentUserName;
+            
+            populateServiceSelect();
+            showModule("custDashboard");
+        }
+    }
+
+    function registerCustomer() {
+        let name = document.getElementById("signUpName").value.trim();
+        let email = document.getElementById("signUpEmail").value.trim();
+        let contact = document.getElementById("signUpContact").value.trim();
+        let password = document.getElementById("signUpPassword").value.trim();
+
+        if (!name || !email || !contact || !password) {
+            alert("Please fill in all fields including your Gmail address.");
+            return;
+        }
+
+        if (!email.toLowerCase().includes("@gmail.com") && !email.includes("@")) {
+            alert("Please provide a valid Gmail address for security verification.");
+            return;
+        }
+
+        if (registeredUsers.some(u => u.name.toLowerCase() === name.toLowerCase() || (u.email && u.email.toLowerCase() === email.toLowerCase()))) {
+            alert("An account with this Name or Gmail address already exists!");
+            return;
+        }
+
+        registeredUsers.push({ 
+            id: registeredUsers.length + 1, 
+            name: name, 
+            email: email, 
+            contact: contact, 
+            password: password, 
+            status: "Active" 
+        });
+        
+        customerNotifs[name] = ["Welcome to CleanWave Laundry Shop! Account created with " + email];
+        
+        alert("Account created successfully! You can now Sign In using your Name or Gmail.");
+        switchAuthTab('signIn');
+        document.getElementById("loginName").value = email;
+    }
+
+    function logout() {
+        currentUserRole = "";
+        currentUserName = "";
+        document.getElementById("customerNav").style.display = "none";
+        document.getElementById("adminNav").style.display = "none";
+        document.getElementById("clientDisplay").innerText = "Welcome to CleanWave";
+        showModule("login");
+    }
+
+    function showModule(moduleId) {
+        let modules = document.querySelectorAll(".module");
+        modules.forEach(m => m.classList.remove("active"));
+        document.getElementById(moduleId).classList.add("active");
+
+        let navBtns = document.querySelectorAll("nav button");
+        navBtns.forEach(b => b.classList.remove("active-nav"));
+
+        if (currentUserRole === "customer") {
+            renderCustomerDashboard();
+            renderCustomerOrders();
+            renderCustomerNotifs();
+            if (moduleId === 'custProfile') renderCustomerProfile();
+        } else if (currentUserRole === "admin") {
+            renderAdminDashboard();
+            renderAdminOrders();
+            renderAdminSales();
+            renderAdminCustomers();
+            renderAdminServices();
+            renderAdminInventory();
+            renderAdminNotifs();
+        }
+    }
+
+    function renderCustomerDashboard() {
+        document.getElementById("custWelcomeText").innerText = "Welcome, " + currentUserName + "!";
+        
+        let myOrders = orders.filter(o => o.customer.toLowerCase() === currentUserName.toLowerCase());
+        let active = myOrders.filter(o => o.status !== "Completed" && o.status !== "Canceled");
+        let completed = myOrders.filter(o => o.status === "Completed");
+        let canceled = myOrders.filter(o => o.status === "Canceled");
+        let totalSpent = completed.reduce((sum, o) => sum + o.total, 0);
+
+        document.getElementById("custActiveOrders").innerText = active.length;
+        document.getElementById("custCompletedOrders").innerText = completed.length;
+        document.getElementById("custCanceledOrders").innerText = canceled.length;
+        document.getElementById("custTotalSpent").innerText = "₱" + totalSpent.toFixed(2);
+
+        let trackerDiv = document.getElementById("activeOrderTracker");
+        if (active.length > 0) {
+            let latestActive = active[0];
+            let currentStepIdx = statusSteps.indexOf(latestActive.status);
+
+            let stepperHTML = `
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+                    <p><strong>Order #${latestActive.number}</strong> — ${latestActive.service} (${latestActive.weight} kg — ₱${latestActive.total})</p>
+                    <p>Status: <span class="badge ${getBadgeClass(latestActive.status)}">${latestActive.status}</span></p>
+                    <div class="stepper">
+            `;
+
+            statusSteps.forEach((step, idx) => {
+                let stepClass = idx < currentStepIdx ? "completed" : (idx === currentStepIdx ? "active" : "");
+                stepperHTML += `
+                    <div class="step ${stepClass}">
+                        <div class="step-icon">${idx + 1}</div>
+                        <div class="step-text">${step}</div>
+                    </div>
+                `;
+            });
+
+            stepperHTML += `</div></div>`;
+            trackerDiv.innerHTML = stepperHTML;
+        } else {
+            trackerDiv.innerHTML = `<p style="color: #666;">No active order currently in progress.</p>`;
+        }
+
+        let notifs = customerNotifs[currentUserName] || [];
+        let dashNotifUl = document.getElementById("custDashNotifList");
+        dashNotifUl.innerHTML = notifs.slice(-3).reverse().map(n => `<li class="notif-item">${n}</li>`).join('') || `<li class="notif-item">No notifications.</li>`;
+
+        let recentTbody = document.getElementById("custDashRecentOrders");
+        recentTbody.innerHTML = myOrders.slice(-3).reverse().map(o => `
+            <tr>
+                <td>#${o.number}</td>
+                <td>${o.dateTime}</td>
+                <td>${o.service}</td>
+                <td>${o.weight} kg</td>
+                <td>₱${o.total}</td>
+                <td><span class="badge ${getBadgeClass(o.status)}">${o.status}</span></td>
+            </tr>
+        `).join('') || `<tr><td colspan="6">No orders placed yet.</td></tr>`;
+    }
+
+    function populateServiceSelect() {
+        let select = document.getElementById("newServiceSelect");
+        select.innerHTML = services.map(s => `<option value="${s.name}">${s.name} (₱${s.price}${s.unit})</option>`).join('');
+        calculateCustOrder();
+    }
+
+    function calculateCustOrder() {
+        let sName = document.getElementById("newServiceSelect").value;
+        let weight = parseFloat(document.getElementById("newWeightInput").value) || 1;
+        let pType = document.getElementById("newPickupSelect").value;
+
+        let sObj = services.find(s => s.name === sName) || services[0];
+        let total = (weight * sObj.price) + (pType.includes("Delivery") ? 50 : 0);
+
+        document.getElementById("newOrderCostDisplay").innerText = "₱" + total.toFixed(2);
+    }
+
+    function submitCustomerOrder() {
+        let sName = document.getElementById("newServiceSelect").value;
+        let weight = parseFloat(document.getElementById("newWeightInput").value) || 1;
+        let pType = document.getElementById("newPickupSelect").value;
+        let prefDate = document.getElementById("newPrefDateInput").value || new Date().toISOString().slice(0, 10);
+        let notes = document.getElementById("newNotesInput").value.trim();
+
+        let sObj = services.find(s => s.name === sName);
+        let total = (weight * sObj.price) + (pType.includes("Delivery") ? 50 : 0);
+
+        let numStr = String(orderCounter++).padStart(3, '0');
+        let now = new Date();
+        let dateStr = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2, '0') + "-" + String(now.getDate()).padStart(2, '0') + " " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        let newOrd = {
+            number: numStr,
+            dateTime: dateStr,
+            customer: currentUserName,
+            service: sName,
+            weight: weight,
+            pickupType: pType,
+            prefDate: prefDate,
+            notes: notes,
+            total: total,
+            status: "Received"
+        };
+
+        orders.push(newOrd);
+        
+        pushCustNotif(currentUserName, `Order #${numStr} (${sName}) submitted successfully!`);
+        adminNotifs.push(`New order #${numStr} received from ${currentUserName}.`);
+
+        alert("Order #" + numStr + " placed successfully!");
+        showModule("custDashboard");
+    }
+
+    function renderCustomerOrders() {
+        let myOrders = orders.filter(o => o.customer.toLowerCase() === currentUserName.toLowerCase());
+        let tbody = document.getElementById("custAllOrdersTable");
+
+        tbody.innerHTML = myOrders.slice().reverse().map(o => `
+            <tr>
+                <td>#${o.number}</td>
+                <td>${o.dateTime}</td>
+                <td>${o.service}</td>
+                <td>${o.weight} kg</td>
+                <td>${o.pickupType}</td>
+                <td>₱${o.total}</td>
+                <td><span class="badge ${getBadgeClass(o.status)}">${o.status}</span></td>
+                <td>
+                    ${o.status === "Received" ? `<button class="btn danger" onclick="cancelCustOrder('${o.number}')">Cancel</button>` : `N/A`}
+                </td>
+            </tr>
+        `).join('') || `<tr><td colspan="8">No order history available.</td></tr>`;
+    }
+
+    function cancelCustOrder(num) {
+        if (!confirm("Are you sure you want to cancel Order #" + num + "?")) return;
+        let ord = orders.find(o => o.number === num);
+        if (ord) {
+            ord.status = "Canceled";
+            pushCustNotif(currentUserName, `Order #${num} was canceled.`);
+            adminNotifs.push(`Order #${num} was canceled by ${currentUserName}.`);
+            renderCustomerOrders();
+            renderCustomerDashboard();
+        }
+    }
+
+    function renderCustomerNotifs() {
+        let notifs = customerNotifs[currentUserName] || [];
+        document.getElementById("custFullNotifList").innerHTML = notifs.slice().reverse().map(n => `<li class="notif-item">${n}</li>`).join('') || `<li class="notif-item">No notifications yet.</li>`;
+    }
+
+    function renderCustomerProfile() {
+        let user = registeredUsers.find(u => u.name.toLowerCase() === currentUserName.toLowerCase());
+        if (user) {
+            document.getElementById("profNameInput").value = user.name;
+            document.getElementById("profEmailInput").value = user.email || "";
+            document.getElementById("profContactInput").value = user.contact;
+            document.getElementById("profCurrentPass").value = "";
+            document.getElementById("profNewPass").value = "";
+        }
+    }
+
+    function updateCustomerProfile() {
+        let newName = document.getElementById("profNameInput").value.trim();
+        let newEmail = document.getElementById("profEmailInput").value.trim();
+        let newContact = document.getElementById("profContactInput").value.trim();
+        let curPass = document.getElementById("profCurrentPass").value.trim();
+        let newPass = document.getElementById("profNewPass").value.trim();
+
+        let user = registeredUsers.find(u => u.name.toLowerCase() === currentUserName.toLowerCase());
+        if (user) {
+            if (curPass !== user.password) {
+                alert("Incorrect current password! Security changes cannot be saved.");
+                return;
+            }
+
+            if (newPass !== "") {
+                user.password = newPass;
+            }
+
+            if (newName !== user.name) {
+                orders.forEach(o => {
+                    if (o.customer === user.name) o.customer = newName;
+                });
+                if (customerNotifs[user.name]) {
+                    customerNotifs[newName] = customerNotifs[user.name];
+                    delete customerNotifs[user.name];
+                }
+            }
+
+            user.name = newName;
+            user.email = newEmail;
+            user.contact = newContact;
+            currentUserName = newName;
+
+            alert("Profile & Security settings updated successfully!");
+            showModule("custDashboard");
+        }
+    }
+
+    function renderAdminDashboard() {
+        let processing = orders.filter(o => o.status !== "Completed" && o.status !== "Canceled");
+        let completed = orders.filter(o => o.status === "Completed");
+        let totalRev = completed.reduce((sum, o) => sum + o.total, 0);
+
+        document.getElementById("admTodayOrders").innerText = orders.length;
+        document.getElementById("admTodayRevenue").innerText = "₱" + totalRev.toFixed(2);
+        document.getElementById("admProcessingOrders").innerText = processing.length;
+        document.getElementById("admCompletedOrders").innerText = completed.length;
+
+        let tbody = document.getElementById("admQuickOrdersTable");
+        tbody.innerHTML = orders.slice(-5).reverse().map(o => `
+            <tr>
+                <td>#${o.number}</td>
+                <td>${o.customer}</td>
+                <td>${o.service}</td>
+                <td><span class="badge ${getBadgeClass(o.status)}">${o.status}</span></td>
+                <td>
+                    <select onchange="updateOrderStatus('${o.number}', this.value)">
+                        ${statusSteps.concat(["Canceled"]).map(st => `<option value="${st}" ${o.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+                    </select>
+                </td>
+            </tr>
+        `).join('') || `<tr><td colspan="5">No orders recorded yet.</td></tr>`;
+    }
+
+    function updateOrderStatus(num, newStatus) {
+        let ord = orders.find(o => o.number === num);
+        if (ord) {
+            ord.status = newStatus;
+            pushCustNotif(ord.customer, `Order #${num} status updated to: ${newStatus}`);
+            adminNotifs.push(`Order #${num} updated to ${newStatus}.`);
+            alert(`Order #${num} status changed to ${newStatus}`);
+            renderAdminDashboard();
+            renderAdminOrders();
+        }
+    }
+
+    function renderAdminOrders() {
+        let tbody = document.getElementById("admAllOrdersTable");
+        tbody.innerHTML = orders.slice().reverse().map(o => `
+            <tr>
+                <td>#${o.number}</td>
+                <td>${o.dateTime}</td>
+                <td>${o.customer}</td>
+                <td>${o.service}</td>
+                <td>${o.weight} kg</td>
+                <td>₱${o.total}</td>
+                <td><span class="badge ${getBadgeClass(o.status)}">${o.status}</span></td>
+                <td>
+                    <select onchange="updateOrderStatus('${o.number}', this.value)">
+                        ${statusSteps.concat(["Canceled"]).map(st => `<option value="${st}" ${o.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+                    </select>
+                    <button class="btn danger" onclick="deleteOrder('${o.number}')">Delete</button>
+                </td>
+            </tr>
+        `).join('') || `<tr><td colspan="8">No orders recorded yet.</td></tr>`;
+    }
+
+    function deleteOrder(num) {
+        if (!confirm(`Delete Order #${num} permanently?`)) return;
+        orders = orders.filter(o => o.number !== num);
+        renderAdminOrders();
+        renderAdminDashboard();
+    }
+
+    function renderAdminSales() {
+        let completed = orders.filter(o => o.status === "Completed");
+        let totalRev = completed.reduce((sum, o) => sum + o.total, 0);
+
+        document.getElementById("salesToday").innerText = "₱" + (totalRev * 0.4).toFixed(2);
+        document.getElementById("salesWeekly").innerText = "₱" + totalRev.toFixed(2);
+        document.getElementById("salesMonthly").innerText = "₱" + (totalRev * 3.2).toFixed(2);
+
+        if (orders.length > 0) {
+            let serviceCounts = {};
+            orders.forEach(o => { serviceCounts[o.service] = (serviceCounts[o.service] || 0) + 1; });
+            let topS = Object.keys(serviceCounts).reduce((a, b) => serviceCounts[a] > serviceCounts[b] ? a : b, "None");
+            document.getElementById("salesTopService").innerText = topS;
+        } else {
+            document.getElementById("salesTopService").innerText = "None";
+        }
+    }
+
+    function renderAdminCustomers() {
+        document.getElementById("admTotalCustomersCount").innerText = registeredUsers.length;
+        let tbody = document.getElementById("admCustomersTable");
+
+        tbody.innerHTML = registeredUsers.map(u => {
+            let userOrderCount = orders.filter(o => o.customer.toLowerCase() === u.name.toLowerCase()).length;
+            return `
+                <tr>
+                    <td>#${u.id}</td>
+                    <td>${u.name}</td>
+                    <td>${u.email || 'N/A'}</td>
+                    <td>${u.contact}</td>
+                    <td>${userOrderCount}</td>
+                    <td><strong>${u.status}</strong></td>
+                    <td>
+                        <button class="btn ${u.status === 'Active' ? 'warning' : 'success'}" onclick="toggleUserStatus(${u.id})">
+                            ${u.status === 'Active' ? 'Disable' : 'Enable'}
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('') || `<tr><td colspan="7">No registered customers.</td></tr>`;
+    }
+
+    function toggleUserStatus(id) {
+        let user = registeredUsers.find(u => u.id === id);
+        if (user) {
+            user.status = user.status === 'Active' ? 'Disabled' : 'Active';
+            renderAdminCustomers();
+        }
+    }
+
+    function renderAdminServices() {
+        let tbody = document.getElementById("admServicesTable");
+        tbody.innerHTML = services.map((s, idx) => `
+            <tr>
+                <td>${s.name}</td>
+                <td>₱${s.price}</td>
+                <td>${s.unit}</td>
+                <td>
+                    <button class="btn danger" onclick="removeService(${idx})">Remove</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function addOrUpdateService() {
+        let name = document.getElementById("servNameInput").value.trim();
+        let price = parseFloat(document.getElementById("servPriceInput").value);
+        let unit = document.getElementById("servUnitSelect").value;
+
+        if (!name || isNaN(price)) {
+            alert("Please enter valid service name and price.");
+            return;
+        }
+
+        let existing = services.find(s => s.name.toLowerCase() === name.toLowerCase());
+        if (existing) {
+            existing.price = price;
+            existing.unit = unit;
+        } else {
+            services.push({ name: name, price: price, unit: unit });
+        }
+
+        document.getElementById("servNameInput").value = "";
+        document.getElementById("servPriceInput").value = "";
+        alert("Service saved!");
+        renderAdminServices();
+    }
+
+    function removeService(idx) {
+        services.splice(idx, 1);
+        renderAdminServices();
+    }
+
+    function renderAdminInventory() {
+        let tbody = document.getElementById("admInventoryTable");
+        tbody.innerHTML = inventory.map((inv, idx) => `
+            <tr>
+                <td>${inv.name}</td>
+                <td>${inv.qty} ${inv.unit}</td>
+                <td>
+                    ${inv.qty < 5 ? `<span class="badge bg-canceled">Low Stock</span>` : `<span class="badge bg-completed">In Stock</span>`}
+                </td>
+                <td>
+                    <button class="btn success" onclick="adjustInventory(${idx}, 1)">＋</button>
+                    <button class="btn danger" onclick="adjustInventory(${idx}, -1)">－</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function adjustInventory(idx, amount) {
+        inventory[idx].qty = Math.max(0, inventory[idx].qty + amount);
+        if (inventory[idx].qty < 5) {
+            adminNotifs.push(`Low stock alert: ${inventory[idx].name} has only ${inventory[idx].qty} ${inventory[idx].unit} left.`);
+        }
+        renderAdminInventory();
+        renderAdminNotifs();
+    }
+
+    function renderAdminNotifs() {
+        document.getElementById("admNotifList").innerHTML = adminNotifs.slice().reverse().map(n => `<li class="notif-item">${n}</li>`).join('') || `<li class="notif-item">No alerts.</li>`;
+    }
+
+    function pushCustNotif(custName, msg) {
+        if (!customerNotifs[custName]) customerNotifs[custName] = [];
+        customerNotifs[custName].push(msg);
+    }
+
+    function getBadgeClass(status) {
+        switch (status) {
+            case "Received": return "bg-received";
+            case "Washing": return "bg-washing";
+            case "Drying": return "bg-drying";
+            case "Ready": return "bg-ready";
+            case "Completed": return "bg-completed";
+            case "Canceled": return "bg-canceled";
+            default: return "bg-received";
+        }
+    }
+</script>
+</body>
+</html>
